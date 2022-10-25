@@ -15,15 +15,33 @@
             hour&min 초기 시간 분,
             24bool; 1pm으로 할건지 13시로 할건지
         2) .show로 실행한다.
-        3) 초기 시간을 현재 시간,분으로 하려면
+        3) 초기 시간을 현재 시간, 분으로 하려면
          calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)을 사용한다.
         4) ok 누를때 호출될 리스너 안에서 해야할 작업들
             - 모델에 알람을 저장한다.
-                모델 data class 생성
-                sharedPreference에 사용자가 설정한 시각을 저장하고 설정 시각의 모델을 반환한다.
-            - 알람을 뷰에 표시한다.
-            - 기존 알람을 삭제한다.
-2.
+                ★★★ 모델 data class 생성
+                ★★★ sharedPreference에 사용자가 설정한 시각을 저장하고 설정 시각의 모델을 반환한다.
+            - 알람을 뷰에 표시한다. ☆나중에 구현
+            - 기존 알람을 삭제한다. ☆나중에 구현
+
+2.OnCreate 함수를 구현한다.
+    (1) 버튼 함수 구현, 시간 재설정은 1.에서 함
+    (2) 데이터 가져오기- 함수로 빼서 구현
+        fetchDataFromSharedPrefererences 함수
+        1) 1-(2)-4)에서 저장한 sp를가져온다.
+            static 으로 sp 키값 저장
+            getString null처리 하기 ?:
+        2) 예외처리
+            Model과 알람이 불일치 하는 경우가 있다. 언제인지 알아보기
+            그 경우 등록된 알람을 확인한다. pendingIntent.GetBroadCast를 사용한다.
+            GetBroadCast 인자는 context, code(상수처리),Intent(나중에 구현),flag(없으면 널 반환하는 flag)
+    (3) 뷰 그리기, 받아온 데이터 즉 model을 인자로 뷰를 그리는 함수 구현
+        1) 시간, amPm, onOff에 따라 버튼 text 넣기
+
+3.알람 리시버 클래스 생성
+    (1)BroadCast Receiver를 상속한다. ->onReceive implement 한다.
+        onReceive; intent가 수신될때 오는 콜백함수
+
 
 
 새로 배운 것
@@ -31,3 +49,4 @@
     (2) TimePickerDialog()
     (3) MVC 패턴(모델,컨트롤러,뷰)
     (4) With함수; 람다의 결과값 반환, apply는 객체 그 자체 반환
+    (5) AppCompatActivity는 context를 상속한다. 따라서 엑티비티에서는 this 사용가능

@@ -11,7 +11,7 @@ import android.widget.Button
 import android.widget.TextView
 import java.util.*
 
-//-----------------------------------------------------------------------------------------생명주기
+//-------------------------------------------------------------------------------------------생명주기
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                     //뷰 업데이트,
                     renderView(model)
                     //기존에 있던 알람 삭제
-                    cancelAlarm()
+                    cancelAlarm() //첫 클릭이라면 여기는 null 값이다.
                 },
                 calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),
                 false
@@ -51,11 +51,11 @@ class MainActivity : AppCompatActivity() {
     private fun clkOnOffBtn() {
         val onOffBtn = findViewById<Button>(R.id.on_off_btn)
         onOffBtn.setOnClickListener {
-            //0 데이터 확인
+            //0. 데이터 확인
             val model = it.tag as? AlarmDisplayModel ?: return@setOnClickListener
             val newModel = saveAlarmModel(model.hour, model.minute, model.onOff.not()) //not은 반전
             renderView(newModel)
-            //1 온오프에 따라 작업 처리
+            //1. 온오프에 따라 작업 처리
             if (newModel.onOff) {
                 //켜진 경우 --> 알람을 등록
                 val calendar = Calendar.getInstance().apply {
@@ -88,14 +88,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //----------------------------------------------------------------------------------------기타함수
+    //--------------------------------------------------------------------------------------기타함수
     //알람 모델 저장; sharedPreference에 사용자가 설정한 시각을 저장하고 설정 시각의 모델을 반환한다.
     private fun saveAlarmModel(
         hour: Int,
         minute: Int,
         onOff: Boolean
     ): AlarmDisplayModel {
-        val model = AlarmDisplayModel(//모델 인스턴스
+        val model = AlarmDisplayModel(  //모델 인스턴스 생성
             hour = hour,
             minute = minute,
             onOff = onOff
@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             Intent(this, AlarmReceiver::class.java),
             PendingIntent.FLAG_NO_CREATE
         )
-        pendingIntent.cancel()
+        pendingIntent?.cancel()
     }
 
 
@@ -133,31 +133,31 @@ class MainActivity : AppCompatActivity() {
             tag = model
         }
     }
-
+    //sp에서 데이터 가져와서 알람 모델 반환한다.
     private fun fetchDataFromSharedPreferences(): AlarmDisplayModel {
-        val sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE)
-        val timeDBValue = sharedPreferences.getString(ALARM_KEY, "9:30") ?: "09:30"
-        val onOffDBValue = sharedPreferences.getBoolean(ON_OFF_KEY, false)
-        val alarmData = timeDBValue.split(":")
+        val sharedPreferences = getSharedPreferences(SHARED_PREFERENCE_NAME, MODE_PRIVATE) //시간 재설정에서 입력한 값
+        val timeDBValue = sharedPreferences.getString(ALARM_KEY, "9:30") ?: "09:30" //널처리
+        val onOffDBValue = sharedPreferences.getBoolean(ON_OFF_KEY, false)          //널처리 필요 없음 bool은 둘중 하나,
+        val alarmData = timeDBValue.split(":")  //split은 List반환
         val alarmModel = AlarmDisplayModel(
-            hour = alarmData[0].toInt(),
+            hour = alarmData[0].toInt(),        //sp에 저장한 값 꺼내와서 알람 모델 인스턴스 생성
             minute = alarmData[1].toInt(),
             onOff = onOffDBValue
         )
-        //보정?? 왜 필요? 예외처리
-        //sharedPreference에 저장된 값과 나타난 값의 간극을 줄이기 위함.
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            ALARM_REQUEST_CODE,
-            Intent(this, AlarmReceiver::class.java),
-            PendingIntent.FLAG_NO_CREATE
+        //보정?? 왜 필요? 예외처리인데 어떤 경우에 나타나는지 알아보자.
+        //sharedPreference에 저장된 값과 나타난 값이 다를 경우
+        val pendingIntent = PendingIntent.getBroadcast( //알람 등록되어있는지 확인하기 위해 가져온다.
+            this,                       //context
+            ALARM_REQUEST_CODE,                 //상수 1000
+            Intent(this, AlarmReceiver::class.java), //intent
+            PendingIntent.FLAG_NO_CREATE        //이미 생성된 PendingIntent 가 있다면 재사용 (없으면 Null 리턴)
         )
         if ((pendingIntent == null) and alarmModel.onOff) {
-            //알람은 꺼져있는데, 데이터는 켜져있는 경우?
-            alarmModel.onOff = false
+            //알람은 꺼져있는데, 데이터는 on인 경우? 불일치하므로
+            alarmModel.onOff = false    //데이터를 off로 한다.
         } else if ((pendingIntent != null) and alarmModel.onOff.not()) {
-            //알람은 켜져있는데, 데이터는 꺼져있는 경우
-            pendingIntent.cancel()
+            //알람은 켜져있는데, 데이터는 off인 경우
+            pendingIntent.cancel()      //알람을 취소한다.
         }
         return alarmModel
     }
