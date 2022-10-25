@@ -1,6 +1,5 @@
 package com.example.aop_part3_chapter03
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
