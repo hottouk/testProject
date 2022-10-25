@@ -1,0 +1,33 @@
+0.화면을 구성 및 기능 설명
+    (1) 알람 시간 설정 버튼
+        1) 알람 시간 설정할 수 있도록 대화창을 띄운다.
+        2) 사용자가 설정한 시간을 저장한다.
+        3) 설정한 알람을 뷰에 띄운다.
+        4) 기존 있던 알람을 삭제
+1.알람 시간 설정 버튼 누르면
+    (1) 현재 시간 받아온다.
+        Calendar.getInstance 사용
+    (2) TimePickerDialog()함수 TPD를 만든다.
+        1) 인자; context, OnTimeSetListener, hour, min, 24false
+            context; this
+            OnTimeSetListener는 창에서 시간을 정하고 ok 버튼 꾸욱 누를때 실행되는 함수다. 람다로 입력
+                {view, hour, min -> } 관련된 view, hour; 설정 시간; min 설정
+            hour&min 초기 시간 분,
+            24bool; 1pm으로 할건지 13시로 할건지
+        2) .show로 실행한다.
+        3) 초기 시간을 현재 시간,분으로 하려면
+         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)을 사용한다.
+        4) ok 누를때 호출될 리스너 안에서 해야할 작업들
+            - 모델에 알람을 저장한다.
+                모델 data class 생성
+                sharedPreference에 사용자가 설정한 시각을 저장하고 설정 시각의 모델을 반환한다.
+            - 알람을 뷰에 표시한다.
+            - 기존 알람을 삭제한다.
+2.
+
+
+새로 배운 것
+    (1) Calendar.getInstance 사용
+    (2) TimePickerDialog()
+    (3) MVC 패턴(모델,컨트롤러,뷰)
+    (4) With함수; 람다의 결과값 반환, apply는 객체 그 자체 반환
