@@ -1,6 +1,7 @@
 package com.example.aop_part3_chapter03
 
 data class AlarmDisplayModel(
+    //사용자가 편집하기 원하는 정보
     val hour: Int,
     val minute: Int,
     var onOff: Boolean
