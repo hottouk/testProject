@@ -39,9 +39,15 @@
         1) 시간, amPm, onOff에 따라 버튼 text 넣기
 
 3.알람 리시버 클래스 생성
-    (1)BroadCast Receiver를 상속한다. ->onReceive implement 한다.
+    (1) BroadCast Receiver를 상속한다. ->onReceive implement 한다.
         onReceive; intent가 수신될때 오는 콜백함수
-
+    (2) 일정 버젼(o) 이상에서는 체널을 꼭 만들어줘야한다.
+        1) 체널 NotificationChannel(id,이름,importance)인스턴스 만들기
+        2) NotificationManagerCompat.from(context).createNotificationChannel()로 채널 생성
+    (3) 알림 만들기
+        1) NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        2) notify()를 통해 빌드하기
+    (4) 만들어진 리시버를 manifest에 등록한다.
 
 
 새로 배운 것
